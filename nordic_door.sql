@@ -1,3 +1,4 @@
+CREATE DATABASE nordic_door;
 
 USE nordic_door;
 
@@ -378,7 +379,8 @@ VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskine
       ('21', 'Elbil', 'Lurt å ha en elbil for kundebesøk slik at vi kan lettere nå kundene våre i nærområdet uten å måtte sykle.', 'Drit lei av å sykle for jobb.', 'Overbevise ledelsen om at El-bil er lurt', 'Kjøpe ny El-bil', '2022-10-03', '2022-01-01', '', '16', '16', NULL, '16', '16', '16'),
       ('22', 'Søppelcontainer', 'Flytte søppelcontaineren til bak bygget slik at  innkjøring til lageret får mer plass for lastebiler og andre kunder som skal til  hentelageret.', 'Plassering av containeren er på feil sted der den stenger innkjørselen til lageret og kunder sliter med å kjøre til lageret.', 'Flytte containeren.', 'Bestille bil som kan flytte Containeren eller få de til å plassere container vedneste henting.', '2022-11-03', '2022-11-10', '', '17', '17', NULL, '17', '17', '17'),
       ('23', 'Mikro', 'Kjøpe ny og bedre mikro', 'Mikro på kjøkkenet har eksplodert', 'Erstatte med ny og større mikro.', 'Kjøpe en bedre og større mikro siden denne er for liten, pluss kanskje kjøpe 2 stk da det er mange som venter i kø.', '2022-10-31', '2023-02-01', '', '18', '18', NULL, '18', '18', '18');
-*/
+
+
 
 
 
