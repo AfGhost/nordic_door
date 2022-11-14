@@ -27,22 +27,23 @@ CREATE OR REPLACE TABLE t_medlemmer (
 t_medlemmer_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 navn_id SMALLINT NULL,
 teams_id SMALLINT NULL,
-CONSTRAINT tm_navn_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id),
-CONSTRAINT tm_teams_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id)
+CONSTRAINT tm_navn_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT tm_teams_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE ansatt (
 ansatt_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 epost VARCHAR(50) NULL,
 passord VARCHAR(50) NOT NULL,
+ansatt_tilstand VARCHAR(50) NOT NULL,
 navn_id SMALLINT NULL,
 teams_id SMALLINT NULL,
 roller_id SMALLINT NULL,
 t_medlemmer_id SMALLINT NULL,
-CONSTRAINT navn_ansatt_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id),
-CONSTRAINT teams_ansatt_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id),
-CONSTRAINT grad_ansatt_FK FOREIGN KEY (roller_id) REFERENCES roller(roller_id),
-CONSTRAINT tm_ansatt_FK FOREIGN KEY (t_medlemmer_id) REFERENCES t_medlemmer(t_medlemmer_id)
+CONSTRAINT navn_ansatt_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT teams_ansatt_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT grad_ansatt_FK FOREIGN KEY (roller_id) REFERENCES roller(roller_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT tm_ansatt_FK FOREIGN KEY (t_medlemmer_id) REFERENCES t_medlemmer(t_medlemmer_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE rapporter_problem (
@@ -50,7 +51,7 @@ rproblem_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 ansatt_id SMALLINT NULL,
 problem_tittel VARCHAR(100) NOT NULL,
 problem_tekst VARCHAR(1000) NOT NULL,
-CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id)
+CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE godkjenning (
@@ -58,7 +59,7 @@ gkjenning_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 ansatt_id SMALLINT NULL,
 gkjent_ikke_gkjent VARCHAR(50) NULL,
 type_godkjenning SMALLINT NULL,
-CONSTRAINT ansatt_gkjenning_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id)
+CONSTRAINT ansatt_gkjenning_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE tidsperiode (
@@ -80,13 +81,16 @@ fremdrift_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 status_id SMALLINT NULL,
 forslag_id SMALLINT NULL,
 fremgang VARCHAR(100) NOT NULL,
-prosentvis_fullført DECIMAL NULL
+aktiv_ikke_aktiv VARCHAR(50) NULL,
+type_aktiv SMALLINT NULL,
+prosentvis_fullført DECIMAL NULL,
+tildelt_team SMALLINT NULL
 );
 
 CREATE OR REPLACE TABLE status_f (
 status_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 fremdrift_id SMALLINT NULL,
-CONSTRAINT status_fremdrift_FK FOREIGN KEY (fremdrift_id) REFERENCES fremdrift(fremdrift_id)
+CONSTRAINT status_fremdrift_FK FOREIGN KEY (fremdrift_id) REFERENCES fremdrift(fremdrift_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE forslag (
@@ -100,19 +104,20 @@ løsning VARCHAR(1000) NULL,
 dato_registrert DATETIME NOT NULL,
 frist DATETIME NULL,
 bilde LONGBLOB NULL,
+navn_id SMALLINT NULL,
+ansvarlig VARCHAR(50) NULL,
 tperiode_id SMALLINT NULL,
 kostnad_id SMALLINT NULL,
-ansvarlig_id SMALLINT NULL,
 teams_id SMALLINT NULL,
 gkjenning_id SMALLINT NULL,
 status_id SMALLINT NULL,
-CONSTRAINT tperiode_forslag_FK FOREIGN KEY (tperiode_id) REFERENCES tidsperiode(tperiode_id),
-CONSTRAINT kostnad_forslag_FK FOREIGN KEY (kostnad_id) REFERENCES kostnad(kostnad_id),
-CONSTRAINT ansatt_forslag_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id),
-CONSTRAINT ansvarlig_forslag_FK FOREIGN KEY (ansvarlig_id) REFERENCES ansatt(ansatt_id),
-CONSTRAINT teams_forslag_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id),
-CONSTRAINT gkjenning_forslag_FK FOREIGN KEY (gkjenning_id) REFERENCES godkjenning(gkjenning_id),
-CONSTRAINT status_forslag_FK FOREIGN KEY (status_id) REFERENCES status_f(status_id)
+CONSTRAINT navn_forslag_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT tperiode_forslag_FK FOREIGN KEY (tperiode_id) REFERENCES tidsperiode(tperiode_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT kostnad_forslag_FK FOREIGN KEY (kostnad_id) REFERENCES kostnad(kostnad_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT ansatt_forslag_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT teams_forslag_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT gkjenning_forslag_FK FOREIGN KEY (gkjenning_id) REFERENCES godkjenning(gkjenning_id) ON UPDATE CASCADE ON DELETE CASCADE,
+CONSTRAINT status_forslag_FK FOREIGN KEY (status_id) REFERENCES status_f(status_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 
@@ -220,31 +225,31 @@ VALUES('1', '1'),
       ('23', '23'),
       ('24', '24');
 
-INSERT INTO ansatt(ansatt_id, epost, passord, navn_id, teams_id, roller_id, t_medlemmer_id)
-VALUES('1', 'ag@gmail.com', 'Testing1234', 1, 1, 3, 1),
-      ('2', 'olanordman@yahoo.com', 'JG12345', 2, 2, 1, 2),
-      ('3', 'olanordman@yahoo.com', 'Ola54321', 3, 3, 2, 3),
-      ('4', 'manis@gmail.com', 'Manka5234', 4, 4, 3, 4),
-      ('5', 'buvikchristoffer@gmail.com', 'Ronaldo7', 5, 5, 2, 5),
-      ('6', 'andersnb@gmail.com', 'Tacokveld124', 6, 6, 3, 6),
-      ('7', 'abdigang@gmail.com', 'Marinertepølser', 7, 7, 1, 7),
-      ('8', 'fana@gmail.com', 'Hansafa8923', 8, 8, 3, 8),
-      ('9', 'muriqielion@gmail.com', 'Test1234', 9, 9, 1, 9),
-      ('10', 'rolff@gmail.com', 'Anti12', 10, 10, 3, 10),
-      ('11', 'arne@gmail.com', 'Rolff123', 11, 11, 2, 11),
-      ('12', 'rona@gmail.com', 'Rof1212', 12, 12, 3, 12),
-      ('13', 'shlirim.balaj@gmail.com', 'Abc123', 13, 13, 1, 13),
-      ('14', 'mona66@hotmail.no', 'Lfc123', 14, 14, 3, 14),
-      ('15', 'ok.hansen@outlook.no', 'Kattepus22', 15, 15, 2, 15),
-      ('16', 'maria@gmail.com', 'Fjott56', 16, 16, 3, 16),
-      ('17', 'abdallahbakir02@gmail.com', 'Testingtesting1234', 17, 17, 2, 17),
-      ('18', 'olaJensen@gmail.com', 'Norge123', 18, 18, 3, 18),
-      ('19', 'nadiaMahmood@gmail.com', 'NadiaM', 19, 19, 1, 19),
-      ('20', 'shima@gmail.com', 'Shi45', 20, 20, 3, 20),
-      ('21', 'stemi@gmail.com', 'Mo1616', 21, 21, 1, 21),
-      ('22', 'vasi@gmail.com', 'Vam1717', 22, 22, 2, 22),
-      ('23', 'maria@gmail.com', 'Hoch1818', '23', '23', '3', 23),
-      ('24', 'sarsa@gmail.com', 'Sasa0193', 24, 24, 3, 24);
+INSERT INTO ansatt(ansatt_id, epost, passord, ansatt_tilstand, navn_id, teams_id, roller_id, t_medlemmer_id)
+VALUES('1', 'ag@gmail.com', 'Testing1234', 'Aktiv', 1, 1, 3, 1),
+      ('2', 'olanordman@yahoo.com', 'JG12345', 'Aktiv', 2, 2, 1, 2),
+      ('3', 'olanordman@yahoo.com', 'Ola54321', 'Aktiv', 3, 3, 2, 3),
+      ('4', 'manis@gmail.com', 'Manka5234', 'Ikke Aktiv', 4, 4, 3, 4),
+      ('5', 'buvikchristoffer@gmail.com', 'Ronaldo7', 'Aktiv', 5, 5, 2, 5),
+      ('6', 'andersnb@gmail.com', 'Tacokveld124', 'Aktiv', 6, 6, 3, 6),
+      ('7', 'abdigang@gmail.com', 'Marinertepølser', 'Aktiv', 7, 7, 1, 7),
+      ('8', 'fana@gmail.com', 'Hansafa8923', 'Ikke Aktiv', 8, 8, 3, 8),
+      ('9', 'muriqielion@gmail.com', 'Test1234', 'Aktiv', 9, 9, 1, 9),
+      ('10', 'rolff@gmail.com', 'Anti12', 'Aktiv', 10, 10, 3, 10),
+      ('11', 'arne@gmail.com', 'Rolff123', 'Aktiv', 11, 11, 2, 11),
+      ('12', 'rona@gmail.com', 'Rof1212', 'Aktiv', 12, 12, 3, 12),
+      ('13', 'shlirim.balaj@gmail.com', 'Abc123', 'Aktiv', 13, 13, 1, 13),
+      ('14', 'mona66@hotmail.no', 'Lfc123', 'Aktiv', 14, 14, 3, 14),
+      ('15', 'ok.hansen@outlook.no', 'Kattepus22', 'Ikke Aktiv', 15, 15, 2, 15),
+      ('16', 'maria@gmail.com', 'Fjott56', 'Aktiv', 16, 16, 3, 16),
+      ('17', 'abdallahbakir02@gmail.com', 'Testingtesting1234', 'Aktiv', 17, 17, 2, 17),
+      ('18', 'olaJensen@gmail.com', 'Norge123', 'Aktiv', 18, 18, 3, 18),
+      ('19', 'nadiaMahmood@gmail.com', 'NadiaM', 'Aktiv', 19, 19, 1, 19),
+      ('20', 'shima@gmail.com', 'Shi45', 'Aktiv', 20, 20, 3, 20),
+      ('21', 'stemi@gmail.com', 'Mo1616', 'Aktiv', 21, 21, 1, 21),
+      ('22', 'vasi@gmail.com', 'Vam1717', 'Aktiv', 22, 22, 2, 22),
+      ('23', 'maria@gmail.com', 'Hoch1818', 'Aktiv', '23', '23', '3', 23),
+      ('24', 'sarsa@gmail.com', 'Sasa0193','Ikke Aktiv', 24, 24, 3, 24);
 
 INSERT INTO rapporter_problem(ansatt_id, problem_tittel, problem_tekst)
 VALUES(4, 'Lagre knapp', 'Får ikke lagret forslaget på nettsiden da lagre knappen dukker ikke opp.'),
@@ -330,31 +335,31 @@ VALUES('', 'Med kostnad', 1),
       ('', 'Uten kostnad', 0),
       ('', 'Uten kostnad', 0);
 
-INSERT INTO fremdrift(status_id, forslag_id, fremgang, prosentvis_fullført)
-VALUES(1, 1, 'Diskuteres', '0'),
-      (2, 2, 'Under arbeid', '50'),
-      (3, 3, 'Ikke startet', '0'),
-      (4, 4, 'Diskuteres', '0'),
-      (5, 5, 'Fullført', '100'),
-      (6, 6, 'Under arbeid', '25'),
-      (7, 7, 'Avslått', '100'),
-      (8, 8, 'Under arbeid', '75'),
-      (9, 9, 'Diskuteres', '0'),
-      (10, 10, 'Diskuteres', '0'),
-      (11, 11, 'Diskuteres', '0'),
-      (12, 12, 'Fullført', '100'),
-      (13, 13, 'Venter deler', '25'),
-      (14, 14, 'Ikke startet', '0'),
-      (15, 15, 'Under arbeid', '50'),
-      (16, 16, 'Avslått', '0'),
-      (17, 17, 'Under arbeid', '25'),
-      (18, 18, 'Diskuteres', '0'),
-      (19, 19, 'Under arbeid', '0'),
-      (20, 20, 'Diskuteres', '0'),
-      (21, 21, 'Diskuteres', '0'),
-      (22, 22, 'Diskuteres', '0'),
-      (23, 23, 'Bestilt ny', '25'),
-      (24, 24, 'Endret/fullført', '100');
+INSERT INTO fremdrift(status_id, forslag_id, fremgang, aktiv_ikke_aktiv, type_aktiv, prosentvis_fullført, tildelt_team)
+VALUES(1, 1, 'Diskuteres', 'Aktiv', '1', '0', '4'),
+      (2, 2, 'Under arbeid', 'Aktiv', '1', '50', '4'),
+      (3, 3, 'Ikke startet', 'Ikke aktiv', '0', '0', '4'),
+      (4, 4, 'Diskuteres', 'Aktiv', '1', '0', '2'),
+      (5, 5, 'Fullført', 'Ikke aktiv', '0', '100', '2'),
+      (6, 6, 'Under arbeid', 'Aktiv', '1', '25', '2'),
+      (7, 7, 'Avslått', 'Ikke aktiv', '0', '100', '20'),
+      (8, 8, 'Under arbeid', 'Aktiv', '1', '75', '20'),
+      (9, 9, 'Diskuteres', 'Aktiv', '1', '0', '20'),
+      (10, 10, 'Diskuteres', 'Aktiv', '1', '0', '5'),
+      (11, 11, 'Diskuteres', 'Aktiv', '1', '0', '5'),
+      (12, 12, 'Fullført', 'Ikke aktiv', '0', '100', '5'),
+      (13, 13, 'Venter deler', 'Aktiv', '1', '25', '9'),
+      (14, 14, 'Ikke startet', 'Ikke aktiv', '0', '0', '9'),
+      (15, 15, 'Under arbeid', 'Aktiv', '1', '50', '9'),
+      (16, 16, 'Avslått', 'Ikke aktiv', '0', '0', '7'),
+      (17, 17, 'Under arbeid', 'Aktiv', '1', '25', '7'),
+      (18, 18, 'Diskuteres', 'Aktiv', '1', '0', '7'),
+      (19, 19, 'Under arbeid', 'Aktiv', '1', '0', '4'),
+      (20, 20, 'Diskuteres', 'Aktiv', '1', '0', '20'),
+      (21, 21, 'Diskuteres', 'Aktiv', '1', '0', '7'),
+      (22, 22, 'Diskuteres', 'Aktiv', '1', '0', '7'),
+      (23, 23, 'Bestilt ny', 'Aktiv', '1', '25', '4'),
+      (24, 24, 'Endret/fullført', 'Ikke aktiv', '0', '100', '20');
 
 INSERT INTO status_f(status_id, fremdrift_id)
 VALUES(1, 1),
@@ -384,31 +389,31 @@ VALUES(1, 1),
 
 
 
-INSERT INTO forslag(ansatt_id, tittel, forslag, årsak, mål, løsning, dato_registrert, frist, bilde, tperiode_id, kostnad_id, ansvarlig_id, teams_id, gkjenning_id, status_id)
-VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskinen', 'Smøres', '2022-11-03', '2022-12-03', '', '1', '1', NULL, '1', '1', '1'),
-      ('2', 'Pc', 'Se gjennom maskin', 'Pc er ødelagt', 'Få start på pc', 'Bytte pc/endre deler', '2022-11-04', '2023-01-01', '', '2', '2', NULL, '2', '2', '2'),
-      ('3', 'Dårlig stemning', 'Møte', 'Forvirring over hvem som skal gjøre hva', 'Oppklaring mellom ansatte', 'Ha et møte med ansatte, teambuilding kan være et forlag', '2022-11-05', '2022-11-30', '', '3', '3', NULL, '3', '3', '3'),
-      ('5', 'Forslagapp', 'Grad på hvor viktig forslag', 'Ønsker å ha en form for rangering på de ulike forslagene. Når det blir sendt inn forslag så er det noen forslag som er viktigere enn andre. Ønsker derfor å kunne ha en side på nytt forslag som du kan gi en skala fra 1-10 hvor viktig forslaget er.', 'Gi forslag rangeringer på applikasjonen.', 'Legge til en ny funskjon i nytt forslag handlingen, hvor brukeren kan gi en skala fra 1-10 hvor viktig forslaget.', '2022-11-03', '2022-11-10', '', '4', '4', '7', '4', '4', '4'),
-      ('6', 'Aktiviteter', 'Aktiviteter arrangert av jobben', 'Jeg føler at de ansatte som jobber sammen ikk er så godt kjent med hverandre. Det kan være ulike årsaker til det og føler ikke den blir bedre med de travle dagene på jobb. Kjemien kunne vært bedre når det kommer til samarbeid.', 'Starte med aktiviteter som innebærer samarbeid mellom teams.', 'Ha ulike teambuilding arrangementer.Kan skje på fritiden hvor jobben arrangerer aktiviteter som: Jobbfester, Teambuilding, seminarer, og Escape room osv.', '2022-11-12', '2022-12-12', '', '5', '5', NULL, '5', '5', '5'),
-      ('7', 'Mangel på folk', 'Flere medlemmer på team 2', 'På 2 team sliter vi med å fordele arbeid på grunn som vi er for få.', 'Skaffe flere teammedlemmer', 'Legge over ansatte fra andre team som er overbemannet', '2022-06-11', '2022-10-12', '', '6', '6', NULL, '6', '6', '6'),
-      ('9', 'Rengjøring', 'Få ny vaskemaskin', 'Ardian kan ikke vaske ', 'Vaske bedre', 'Ny maskin', '2022-11-11', '2023-11-11', '', '7', '7', NULL, '7', '7', '7'),
-      ('10', 'Kantina', 'Ny ovn', 'Varmer ikke opp maten', 'Ny ovn', 'Kjøpe ny ovn', '2022-10-23', '2023-01-01', '', '8', '8', NULL, '8', '8', '8'),
-      ('11', 'Toallettet', 'Nytt toallett', 'Tett do 4 ganger i uka ', 'Ny toallett', 'Ny rørsystem', '2022-10-02', '2023-03-02', '', '9', '9', NULL, '9', '9', '9'),
-      ('13', 'Parkering', 'Ny parkeringsplass?', 'For lite plass', 'Kunne parkere ', 'Oppdatere parkering', '2022-11-01', '2023-01-01', '', '10', '10', NULL, '10', '10', '10'),
-      ('14', 'Kantina', 'Glutenfri mat', 'For lite utvalg av glutenfri mat', 'Mer mat i kantine', 'Endre kantinemeny', '2022-10-02', '2023-04-02', '', '11', '11', NULL, '11', '11', '11'),
-      ('15', 'Feiekost', 'Ny feiekost', 'Feiekost er ødelagt, trenger ny', 'Kunne feie', 'Kjøpe ny feiekost', '2022-05-16', '2023-05-16', '', '12', '12', NULL, '12', '12', '12'),
-      ('17', 'Søppeldunk', 'Ny lokk', 'Ødelagt', 'Lukke søppeldunken', 'Ny lokk', '2022-10-10', '2022-11-11', '', '13', '13', '18', '13', '13', '13'),
-      ('18', 'Handicappparkering', 'Parkering for Funksjonshemmede', 'Ingen parkering for funksjonshemmede', 'Gjøre det lettere for funksjonshemmede', 'Merke noen av parkeringsplassene med Handicapskilt', '2022-08-09', '2022-12-15', '', '14', '14', '17', '14', '14', '14'),
-      ('19', 'Hoveddøra', 'Lager mye lyd ved åpning', 'Lenge siden den er smørt', 'Bli kvitt knirkelyder', 'Smøre døra med olje', '2022-11-03', '2022-12-03', '', '15', '15', '19', '15', '15', '15'),
-      ('21', 'Elbil', 'Lurt å ha en elbil for kundebesøk slik at vi kan lettere nå kundene våre i nærområdet uten å måtte sykle.', 'Drit lei av å sykle for jobb.', 'Overbevise ledelsen om at El-bil er lurt', 'Kjøpe ny El-bil', '2022-10-03', '2022-01-01', '', '16', '16', NULL, '16', '16', '16'),
-      ('22', 'Søppelcontainer', 'Flytte søppelcontaineren til bak bygget slik at  innkjøring til lageret får mer plass for lastebiler og andre kunder som skal til  hentelageret.', 'Plassering av containeren er på feil sted der den stenger innkjørselen til lageret og kunder sliter med å kjøre til lageret.', 'Flytte containeren.', 'Bestille bil som kan flytte Containeren eller få de til å plassere container vedneste henting.', '2022-11-03', '2022-11-10', '', '17', '17', NULL, '17', '17', '17'),
-      ('23', 'Mikro', 'Kjøpe ny og bedre mikro', 'Mikro på kjøkkenet har eksplodert', 'Erstatte med ny og større mikro.', 'Kjøpe en bedre og større mikro siden denne er for liten, pluss kanskje kjøpe 2 stk da det er mange som venter i kø.', '2022-10-31', '2023-02-01', '', '18', '18', NULL, '18', '18', '18'),
-      ('1', 'Rør', 'Oppgradere rør', 'For gamle rør i bygg 2 som lekker og repareres kontinuerlig.', 'Snakke med et firma om det pris og tidsbruk.', 'Skifte rør, oppgradere og tørke slik at fuktskaden i bygg 2 forsvinner.', '2022-11-07', '2023-02-07', '', '19', '19', '1', '1', '19', '19'),
-      ('9', 'Parkeringsplass', 'Forstørre parkeringsplassene bak bygget.', 'For trange p-plasser bak bygget. Får nesten ikke parkert eller gått ut av bilen når man parkerer.', 'Utvide p-plassene', 'Finne ut hvilket firma som kan forstørre p-plassene.', '2022-09-12', '2023-01-12', '', '20', '20', '9', '9', '20', '20'),
-      ('21', 'Taket', 'Forhøye taket', 'For lite truck høyde, trangt i høyden', 'Snakke med et firma om det er mulig.', 'Tømme lager nr. 1 hvis forhøying er mulig.', '2022-11-08', '2023-04-08', '', '21', '21', '21', '21', '21', '21'),
-      ('21', 'Parkeringsplass', 'Tydeligere merking', 'Usynlig merking på p-plasser', 'Remerke p-plassene på hele området', 'Snakke med samme firma som utvider p-plassene om de kan remerke alle plassene.', '2022-09-12', '2023-01-12', '', '22', '22', '9', '21', '22', '22'),
-      ('1', 'Kopimaskin', 'Flytte kopimaskin ut fra kontoret', 'Andre må gå langt for å kopiere.', 'Gi alle lettere tilgang på kopimaskinen.', 'Enten flytte kopimaskinen ut fra kontoret slik at den er lett tilgjengelig for alle eller kjøpe en til for resten av bygget som kan plasseres i kantina.', '2022-10-06', '2023-01-01', '', '23', '23', NULL, '1', '23', '23'),
-      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '21', '9', '24', '24');
+INSERT INTO forslag(ansatt_id, tittel, forslag, årsak, mål, løsning, dato_registrert, frist, bilde, tperiode_id, kostnad_id, navn_id, ansvarlig, teams_id, gkjenning_id, status_id)
+VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskinen', 'Smøres', '2022-11-03', '2022-12-03', '', '1', '1', '1', '', '1', '1', '1'),
+      ('2', 'Pc', 'Se gjennom maskin', 'Pc er ødelagt', 'Få start på pc', 'Bytte pc/endre deler', '2022-11-04', '2023-01-01', '', '2', '2', '2', '', '2', '2', '2'),
+      ('3', 'Dårlig stemning', 'Møte', 'Forvirring over hvem som skal gjøre hva', 'Oppklaring mellom ansatte', 'Ha et møte med ansatte, teambuilding kan være et forlag', '2022-11-05', '2022-11-30', '', '3', '3', '3', '', '3', '3', '3'),
+      ('5', 'Forslagapp', 'Grad på hvor viktig forslag', 'Ønsker å ha en form for rangering på de ulike forslagene. Når det blir sendt inn forslag så er det noen forslag som er viktigere enn andre. Ønsker derfor å kunne ha en side på nytt forslag som du kan gi en skala fra 1-10 hvor viktig forslaget er.', 'Gi forslag rangeringer på applikasjonen.', 'Legge til en ny funskjon i nytt forslag handlingen, hvor brukeren kan gi en skala fra 1-10 hvor viktig forslaget.', '2022-11-03', '2022-11-10', '', '4', '4', '5', 'Abdullah', '4', '4', '4'),
+      ('6', 'Aktiviteter', 'Aktiviteter arrangert av jobben', 'Jeg føler at de ansatte som jobber sammen ikk er så godt kjent med hverandre. Det kan være ulike årsaker til det og føler ikke den blir bedre med de travle dagene på jobb. Kjemien kunne vært bedre når det kommer til samarbeid.', 'Starte med aktiviteter som innebærer samarbeid mellom teams.', 'Ha ulike teambuilding arrangementer.Kan skje på fritiden hvor jobben arrangerer aktiviteter som: Jobbfester, Teambuilding, seminarer, og Escape room osv.', '2022-11-12', '2022-12-12', '', '5', '5', '6', '', '5', '5', '5'),
+      ('7', 'Mangel på folk', 'Flere medlemmer på team 2', 'På 2 team sliter vi med å fordele arbeid på grunn som vi er for få.', 'Skaffe flere teammedlemmer', 'Legge over ansatte fra andre team som er overbemannet', '2022-06-11', '2022-10-12', '', '6', '6', '7', '', '6', '6', '6'),
+      ('9', 'Rengjøring', 'Få ny vaskemaskin', 'Ardian kan ikke vaske ', 'Vaske bedre', 'Ny maskin', '2022-11-11', '2023-11-11', '', '7', '7', '9', '', '7', '7', '7'),
+      ('10', 'Kantina', 'Ny ovn', 'Varmer ikke opp maten', 'Ny ovn', 'Kjøpe ny ovn', '2022-10-23', '2023-01-01', '', '8', '8', '10', '', '8', '8', '8'),
+      ('11', 'Toallettet', 'Nytt toallett', 'Tett do 4 ganger i uka ', 'Ny toallett', 'Ny rørsystem', '2022-10-02', '2023-03-02', '', '9', '9', '11', '', '9', '9', '9'),
+      ('13', 'Parkering', 'Ny parkeringsplass?', 'For lite plass', 'Kunne parkere ', 'Oppdatere parkering', '2022-11-01', '2023-01-01', '', '10', '10', '13', '', '10', '10', '10'),
+      ('14', 'Kantina', 'Glutenfri mat', 'For lite utvalg av glutenfri mat', 'Mer mat i kantine', 'Endre kantinemeny', '2022-10-02', '2023-04-02', '', '11', '11', '14', '', '11', '11', '11'),
+      ('15', 'Feiekost', 'Ny feiekost', 'Feiekost er ødelagt, trenger ny', 'Kunne feie', 'Kjøpe ny feiekost', '2022-05-16', '2023-05-16', '', '12', '12', '15', '', '12', '12', '12'),
+      ('17', 'Søppeldunk', 'Ny lokk', 'Ødelagt', 'Lukke søppeldunken', 'Ny lokk', '2022-10-10', '2022-11-11', '', '13', '13', '17', 'OlavMagnus', '13', '13', '13'),
+      ('18', 'Handicappparkering', 'Parkering for Funksjonshemmede', 'Ingen parkering for funksjonshemmede', 'Gjøre det lettere for funksjonshemmede', 'Merke noen av parkeringsplassene med Handicapskilt', '2022-08-09', '2022-12-15', '', '14', '14', '18', 'Abdallah', '14', '14', '14'),
+      ('19', 'Hoveddøra', 'Lager mye lyd ved åpning', 'Lenge siden den er smørt', 'Bli kvitt knirkelyder', 'Smøre døra med olje', '2022-11-03', '2022-12-03', '', '15', '15', '19', 'Nadia', '15', '15', '15'),
+      ('21', 'Elbil', 'Lurt å ha en elbil for kundebesøk slik at vi kan lettere nå kundene våre i nærområdet uten å måtte sykle.', 'Drit lei av å sykle for jobb.', 'Overbevise ledelsen om at El-bil er lurt', 'Kjøpe ny El-bil', '2022-10-03', '2022-01-01', '', '16', '16', '21', '', '16', '16', '16'),
+      ('22', 'Søppelcontainer', 'Flytte søppelcontaineren til bak bygget slik at  innkjøring til lageret får mer plass for lastebiler og andre kunder som skal til  hentelageret.', 'Plassering av containeren er på feil sted der den stenger innkjørselen til lageret og kunder sliter med å kjøre til lageret.', 'Flytte containeren.', 'Bestille bil som kan flytte Containeren eller få de til å plassere container vedneste henting.', '2022-11-03', '2022-11-10', '', '17', '17', '22', '', '17', '17', '17'),
+      ('23', 'Mikro', 'Kjøpe ny og bedre mikro', 'Mikro på kjøkkenet har eksplodert', 'Erstatte med ny og større mikro.', 'Kjøpe en bedre og større mikro siden denne er for liten, pluss kanskje kjøpe 2 stk da det er mange som venter i kø.', '2022-10-31', '2023-02-01', '', '18', '18', '23', '', '18', '18', '18'),
+      ('1', 'Rør', 'Oppgradere rør', 'For gamle rør i bygg 2 som lekker og repareres kontinuerlig.', 'Snakke med et firma om det pris og tidsbruk.', 'Skifte rør, oppgradere og tørke slik at fuktskaden i bygg 2 forsvinner.', '2022-11-07', '2023-02-07', '', '19', '19', '1', 'Ardian', '1', '19', '19'),
+      ('9', 'Parkeringsplass', 'Forstørre parkeringsplassene bak bygget.', 'For trange p-plasser bak bygget. Får nesten ikke parkert eller gått ut av bilen når man parkerer.', 'Utvide p-plassene', 'Finne ut hvilket firma som kan forstørre p-plassene.', '2022-09-12', '2023-01-12', '', '20', '20', '9', 'Elion', '9', '20', '20'),
+      ('21', 'Taket', 'Forhøye taket', 'For lite truck høyde, trangt i høyden', 'Snakke med et firma om det er mulig.', 'Tømme lager nr. 1 hvis forhøying er mulig.', '2022-11-08', '2023-04-08', '', '21', '21', '21', 'Safi', '21', '21', '21'),
+      ('21', 'Parkeringsplass', 'Tydeligere merking', 'Usynlig merking på p-plasser', 'Remerke p-plassene på hele området', 'Snakke med samme firma som utvider p-plassene om de kan remerke alle plassene.', '2022-09-12', '2023-01-12', '', '22', '22', '21', 'Elion', '21', '22', '22'),
+      ('1', 'Kopimaskin', 'Flytte kopimaskin ut fra kontoret', 'Andre må gå langt for å kopiere.', 'Gi alle lettere tilgang på kopimaskinen.', 'Enten flytte kopimaskinen ut fra kontoret slik at den er lett tilgjengelig for alle eller kjøpe en til for resten av bygget som kan plasseres i kantina.', '2022-10-06', '2023-01-01', '', '23', '23', '1', '', '1', '23', '23'),
+      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '9', 'Safi', '9', '24', '24');
 
 
 
