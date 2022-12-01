@@ -1,5 +1,3 @@
-DROP DATABASE nordic_door;
-
 CREATE DATABASE nordic_door;
 
 USE nordic_door;
@@ -51,7 +49,7 @@ rproblem_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 ansatt_id SMALLINT NULL,
 problem_tittel VARCHAR(100) NOT NULL,
 problem_tekst VARCHAR(1000) NOT NULL,
-CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE
+CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 CREATE OR REPLACE TABLE godkjenning (
@@ -97,7 +95,7 @@ CREATE OR REPLACE TABLE forslag (
 forslag_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 ansatt_id SMALLINT NOT NULL,
 tittel VARCHAR(100) NOT NULL,
-forslag VARCHAR (1000) NOT NULL,
+nyttforslag VARCHAR (1000) NOT NULL,
 årsak VARCHAR(500) NULL,
 mål VARCHAR(500) NULL,
 løsning VARCHAR(1000) NULL,
@@ -111,13 +109,13 @@ kostnad_id SMALLINT NULL,
 teams_id SMALLINT NULL,
 gkjenning_id SMALLINT NULL,
 status_id SMALLINT NULL,
-CONSTRAINT navn_forslag_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT tperiode_forslag_FK FOREIGN KEY (tperiode_id) REFERENCES tidsperiode(tperiode_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT kostnad_forslag_FK FOREIGN KEY (kostnad_id) REFERENCES kostnad(kostnad_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT ansatt_forslag_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT teams_forslag_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT gkjenning_forslag_FK FOREIGN KEY (gkjenning_id) REFERENCES godkjenning(gkjenning_id) ON UPDATE CASCADE ON DELETE CASCADE,
-CONSTRAINT status_forslag_FK FOREIGN KEY (status_id) REFERENCES status_f(status_id) ON UPDATE CASCADE ON DELETE CASCADE
+CONSTRAINT navn_forslag_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT tperiode_forslag_FK FOREIGN KEY (tperiode_id) REFERENCES tidsperiode(tperiode_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT kostnad_forslag_FK FOREIGN KEY (kostnad_id) REFERENCES kostnad(kostnad_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT ansatt_forslag_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT teams_forslag_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT gkjenning_forslag_FK FOREIGN KEY (gkjenning_id) REFERENCES godkjenning(gkjenning_id) ON UPDATE CASCADE ON DELETE SET NULL ,
+CONSTRAINT status_forslag_FK FOREIGN KEY (status_id) REFERENCES status_f(status_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 
@@ -389,7 +387,7 @@ VALUES(1, 1),
 
 
 
-INSERT INTO forslag(ansatt_id, tittel, forslag, årsak, mål, løsning, dato_registrert, frist, bilde, tperiode_id, kostnad_id, navn_id, ansvarlig, teams_id, gkjenning_id, status_id)
+INSERT INTO forslag(ansatt_id, tittel, nyttforslag, årsak, mål, løsning, dato_registrert, frist, bilde, tperiode_id, kostnad_id, navn_id, ansvarlig, teams_id, gkjenning_id, status_id)
 VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskinen', 'Smøres', '2022-11-03', '2022-12-03', '', '1', '1', '1', '', '1', '1', '1'),
       ('2', 'Pc', 'Se gjennom maskin', 'Pc er ødelagt', 'Få start på pc', 'Bytte pc/endre deler', '2022-11-04', '2023-01-01', '', '2', '2', '2', '', '2', '2', '2'),
       ('3', 'Dårlig stemning', 'Møte', 'Forvirring over hvem som skal gjøre hva', 'Oppklaring mellom ansatte', 'Ha et møte med ansatte, teambuilding kan være et forlag', '2022-11-05', '2022-11-30', '', '3', '3', '3', '', '3', '3', '3'),
@@ -408,12 +406,13 @@ VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskine
       ('21', 'Elbil', 'Lurt å ha en elbil for kundebesøk slik at vi kan lettere nå kundene våre i nærområdet uten å måtte sykle.', 'Drit lei av å sykle for jobb.', 'Overbevise ledelsen om at El-bil er lurt', 'Kjøpe ny El-bil', '2022-10-03', '2022-01-01', '', '16', '16', '21', '', '16', '16', '16'),
       ('22', 'Søppelcontainer', 'Flytte søppelcontaineren til bak bygget slik at  innkjøring til lageret får mer plass for lastebiler og andre kunder som skal til  hentelageret.', 'Plassering av containeren er på feil sted der den stenger innkjørselen til lageret og kunder sliter med å kjøre til lageret.', 'Flytte containeren.', 'Bestille bil som kan flytte Containeren eller få de til å plassere container vedneste henting.', '2022-11-03', '2022-11-10', '', '17', '17', '22', '', '17', '17', '17'),
       ('23', 'Mikro', 'Kjøpe ny og bedre mikro', 'Mikro på kjøkkenet har eksplodert', 'Erstatte med ny og større mikro.', 'Kjøpe en bedre og større mikro siden denne er for liten, pluss kanskje kjøpe 2 stk da det er mange som venter i kø.', '2022-10-31', '2023-02-01', '', '18', '18', '23', '', '18', '18', '18'),
-      ('1', 'Rør', 'Oppgradere rør', 'For gamle rør i bygg 2 som lekker og repareres kontinuerlig.', 'Snakke med et firma om det pris og tidsbruk.', 'Skifte rør, oppgradere og tørke slik at fuktskaden i bygg 2 forsvinner.', '2022-11-07', '2023-02-07', '', '19', '19', '1', 'Ardian', '1', '19', '19'),
-      ('9', 'Parkeringsplass', 'Forstørre parkeringsplassene bak bygget.', 'For trange p-plasser bak bygget. Får nesten ikke parkert eller gått ut av bilen når man parkerer.', 'Utvide p-plassene', 'Finne ut hvilket firma som kan forstørre p-plassene.', '2022-09-12', '2023-01-12', '', '20', '20', '9', 'Elion', '9', '20', '20'),
+      ('1', 'Rør', 'Oppgradere rør', 'For gamle rør i bygg 2 som lekker og repareres kontinuerlig.', 'Snakke med et firma om det pris og tidsbruk.', 'Skifte rør, oppgradere og tørke slik at fuktskaden i bygg 2 forsvinner.', '2022-11-07', '2023-02-07', '', '19', '19', '1', 'Ardian', '19', '19', '19'),
+      ('9', 'Parkeringsplass', 'Forstørre parkeringsplassene bak bygget.', 'For trange p-plasser bak bygget. Får nesten ikke parkert eller gått ut av bilen når man parkerer.', 'Utvide p-plassene', 'Finne ut hvilket firma som kan forstørre p-plassene.', '2022-09-12', '2023-01-12', '', '20', '20', '9', 'Elion', '20', '20', '20'),
       ('21', 'Taket', 'Forhøye taket', 'For lite truck høyde, trangt i høyden', 'Snakke med et firma om det er mulig.', 'Tømme lager nr. 1 hvis forhøying er mulig.', '2022-11-08', '2023-04-08', '', '21', '21', '21', 'Safi', '21', '21', '21'),
-      ('21', 'Parkeringsplass', 'Tydeligere merking', 'Usynlig merking på p-plasser', 'Remerke p-plassene på hele området', 'Snakke med samme firma som utvider p-plassene om de kan remerke alle plassene.', '2022-09-12', '2023-01-12', '', '22', '22', '21', 'Elion', '21', '22', '22'),
-      ('1', 'Kopimaskin', 'Flytte kopimaskin ut fra kontoret', 'Andre må gå langt for å kopiere.', 'Gi alle lettere tilgang på kopimaskinen.', 'Enten flytte kopimaskinen ut fra kontoret slik at den er lett tilgjengelig for alle eller kjøpe en til for resten av bygget som kan plasseres i kantina.', '2022-10-06', '2023-01-01', '', '23', '23', '1', '', '1', '23', '23'),
-      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '9', 'Safi', '9', '24', '24');
+      ('21', 'Parkeringsplass', 'Tydeligere merking', 'Usynlig merking på p-plasser', 'Remerke p-plassene på hele området', 'Snakke med samme firma som utvider p-plassene om de kan remerke alle plassene.', '2022-09-12', '2023-01-12', '', '22', '22', '21', 'Elion', '22', '22', '22'),
+      ('1', 'Kopimaskin', 'Flytte kopimaskin ut fra kontoret', 'Andre må gå langt for å kopiere.', 'Gi alle lettere tilgang på kopimaskinen.', 'Enten flytte kopimaskinen ut fra kontoret slik at den er lett tilgjengelig for alle eller kjøpe en til for resten av bygget som kan plasseres i kantina.', '2022-10-06', '2023-01-01', '', '23', '23', '1', '', '23', '23', '23'),
+      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '9', 'Safi', '24', '24', '24');
+
 
 
 
