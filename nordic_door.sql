@@ -5,39 +5,39 @@ USE nordic_door;
 CREATE OR REPLACE TABLE navn (
 navn_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
 fornavn VARCHAR(30) NOT NULL,
-mellomnavn VARCHAR(30) NULL,
+mellomnavn VARCHAR(30),
 etternavn VARCHAR(30) NOT NULL,
 brukernavn VARCHAR(50) NOT NULL
 );
 
 CREATE OR REPLACE TABLE teams (
-teams_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+teams_id TINYINT AUTO_INCREMENT PRIMARY KEY,
 team VARCHAR(20) NOT NULL
 );
 
 CREATE OR REPLACE TABLE roller (
-roller_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+roller_id TINYINT AUTO_INCREMENT PRIMARY KEY,
 rolle VARCHAR(20) NOT NULL,
 grad INT NOT NULL
 );
 
 CREATE OR REPLACE TABLE t_medlemmer (
-t_medlemmer_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-navn_id SMALLINT NULL,
-teams_id SMALLINT NULL,
+t_medlemmer_id TINYINT AUTO_INCREMENT PRIMARY KEY,
+navn_id SMALLINT,
+teams_id TINYINT,
 CONSTRAINT tm_navn_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT tm_teams_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE ansatt (
 ansatt_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-epost VARCHAR(50) NULL,
+epost VARCHAR(50),
 passord VARCHAR(50) NOT NULL,
 ansatt_tilstand VARCHAR(50) NOT NULL,
-navn_id SMALLINT NULL,
-teams_id SMALLINT NULL,
-roller_id SMALLINT NULL,
-t_medlemmer_id SMALLINT NULL,
+navn_id SMALLINT,
+teams_id TINYINT,
+roller_id TINYINT,
+t_medlemmer_id TINYINT,
 CONSTRAINT navn_ansatt_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT teams_ansatt_FK FOREIGN KEY (teams_id) REFERENCES teams(teams_id) ON UPDATE CASCADE ON DELETE CASCADE,
 CONSTRAINT grad_ansatt_FK FOREIGN KEY (roller_id) REFERENCES roller(roller_id) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -46,7 +46,7 @@ CONSTRAINT tm_ansatt_FK FOREIGN KEY (t_medlemmer_id) REFERENCES t_medlemmer(t_me
 
 CREATE TABLE rapporter_problem (
 rproblem_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-ansatt_id SMALLINT NULL,
+ansatt_id SMALLINT,
 problem_tittel VARCHAR(100) NOT NULL,
 problem_tekst VARCHAR(1000) NOT NULL,
 CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE SET NULL
@@ -54,61 +54,61 @@ CONSTRAINT ansatt_rp_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON 
 
 CREATE OR REPLACE TABLE godkjenning (
 gkjenning_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-ansatt_id SMALLINT NULL,
-gkjent_ikke_gkjent VARCHAR(50) NULL,
-type_godkjenning SMALLINT NULL,
+ansatt_id SMALLINT,
+gkjent_ikke_gkjent VARCHAR(50),
+type_godkjenning SMALLINT,
 CONSTRAINT ansatt_gkjenning_FK FOREIGN KEY (ansatt_id) REFERENCES ansatt(ansatt_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE tidsperiode (
 tperiode_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-varighet VARCHAR(30) NULL,
-tperiode VARCHAR(30) NULL,
-type_tid SMALLINT NULL
+varighet VARCHAR(30),
+tperiode VARCHAR(30),
+type_tid SMALLINT
 );
 
 CREATE OR REPLACE TABLE kostnad (
 kostnad_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-kostnad VARCHAR(70) NULL,
-med_uten_K VARCHAR(30) NULL,
-type_K SMALLINT NULL
+kostnad VARCHAR(70),
+med_uten_K VARCHAR(30),
+type_K SMALLINT
 );
 
 CREATE OR REPLACE TABLE fremdrift (
 fremdrift_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-status_id SMALLINT NULL,
-forslag_id SMALLINT NULL,
+status_id SMALLINT,
+forslag_id SMALLINT,
 fremgang VARCHAR(100) NOT NULL,
-aktiv_ikke_aktiv VARCHAR(50) NULL,
-type_aktiv SMALLINT NULL,
-prosentvis_fullført DECIMAL NULL,
-tildelt_team SMALLINT NULL
+aktiv_ikke_aktiv VARCHAR(50),
+type_aktiv SMALLINT,
+prosentvis_fullført DECIMAL,
+tildelt_team TINYINT
 );
 
 CREATE OR REPLACE TABLE status_f (
 status_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-fremdrift_id SMALLINT NULL,
+fremdrift_id SMALLINT,
 CONSTRAINT status_fremdrift_FK FOREIGN KEY (fremdrift_id) REFERENCES fremdrift(fremdrift_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE OR REPLACE TABLE forslag (
 forslag_id SMALLINT AUTO_INCREMENT PRIMARY KEY,
-ansatt_id SMALLINT NOT NULL,
+ansatt_id SMALLINT,
 tittel VARCHAR(100) NOT NULL,
 nyttforslag VARCHAR (1000) NOT NULL,
-årsak VARCHAR(500) NULL,
-mål VARCHAR(500) NULL,
-løsning VARCHAR(1000) NULL,
+årsak VARCHAR(500),
+mål VARCHAR(500),
+løsning VARCHAR(1000),
 dato_registrert DATETIME NOT NULL,
-frist DATETIME NULL,
-bilde LONGBLOB NULL,
-navn_id SMALLINT NULL,
-ansvarlig VARCHAR(50) NULL,
-tperiode_id SMALLINT NULL,
-kostnad_id SMALLINT NULL,
-teams_id SMALLINT NULL,
-gkjenning_id SMALLINT NULL,
-status_id SMALLINT NULL,
+frist DATETIME,
+bilde LONGBLOB,
+navn_id SMALLINT,
+ansvarlig VARCHAR(50),
+tperiode_id SMALLINT,
+kostnad_id SMALLINT,
+teams_id TINYINT,
+gkjenning_id SMALLINT,
+status_id SMALLINT,
 CONSTRAINT navn_forslag_FK FOREIGN KEY (navn_id) REFERENCES navn(navn_id) ON UPDATE CASCADE ON DELETE SET NULL ,
 CONSTRAINT tperiode_forslag_FK FOREIGN KEY (tperiode_id) REFERENCES tidsperiode(tperiode_id) ON UPDATE CASCADE ON DELETE SET NULL ,
 CONSTRAINT kostnad_forslag_FK FOREIGN KEY (kostnad_id) REFERENCES kostnad(kostnad_id) ON UPDATE CASCADE ON DELETE SET NULL ,
