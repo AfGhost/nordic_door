@@ -1,3 +1,4 @@
+DROP DATABASE nordic_door;
 CREATE DATABASE nordic_door;
 
 USE nordic_door;
@@ -279,6 +280,9 @@ VALUES(1, 'Vurderes', 2),
       (21, 'Vurderes', 2),
       (21, 'Vurderes', 2),
       (1, 'Godkjent', 1),
+      (9, 'Godkjent', 1),
+      (21, 'Godkjent', 1),
+      (1, 'Godkjent', 1),
       (9, 'Godkjent', 1);
 
 INSERT INTO tidsperiode(varighet, tperiode, type_tid)
@@ -305,7 +309,10 @@ VALUES('1 måned', 'Kortsiktig', 0),
       ('6 måneder', 'Langsiktig', 1),
       ('4 måneder', 'Langsiktig', 1),
       ('3 måneder', 'Langsiktig', 1),
-      ('13 dager', 'Kortsiktig', 0);
+      ('13 dager', 'Kortsiktig', 0),
+      ('15 dager', 'Kortsiktig', 0),
+      ('13 dager', 'Kortsiktig', 0),
+      ('14 dager', 'Kortsiktig', 0);
 
 INSERT INTO kostnad(kostnad, med_uten_K, type_K)
 VALUES('', 'Med kostnad', 1),
@@ -331,7 +338,10 @@ VALUES('', 'Med kostnad', 1),
       ('', 'Med kostnad', 1),
       ('', 'Med kostnad', 1),
       ('', 'Uten kostnad', 0),
-      ('', 'Uten kostnad', 0);
+      ('', 'Uten kostnad', 0),
+      ('0', 'Uten kostnad', 0),
+      ('0', 'Uten kostnad', 0),
+      ('0', 'Uten kostnad', 0);
 
 INSERT INTO fremdrift(status_id, forslag_id, fremgang, aktiv_ikke_aktiv, type_aktiv, prosentvis_fullført, tildelt_team)
 VALUES(1, 1, 'Diskuteres', 'Aktiv', '1', '0', '4'),
@@ -357,7 +367,10 @@ VALUES(1, 1, 'Diskuteres', 'Aktiv', '1', '0', '4'),
       (21, 21, 'Diskuteres', 'Aktiv', '1', '0', '7'),
       (22, 22, 'Diskuteres', 'Aktiv', '1', '0', '7'),
       (23, 23, 'Bestilt ny', 'Aktiv', '1', '25', '4'),
-      (24, 24, 'Endret/fullført', 'Ikke aktiv', '0', '100', '20');
+      (24, 24, 'Endret/fullført', 'Ikke aktiv', '0', '100', '20'),
+      (25, 25, 'Under arbeid', 'Aktiv', '1', '25', '7'),
+      (26, 26, 'Under arbeid', 'Aktiv', '1', '0', '4'),
+      (27, 27, 'Under arbeid', 'Aktiv', '1', '0', '7');
 
 INSERT INTO status_f(status_id, fremdrift_id)
 VALUES(1, 1),
@@ -383,7 +396,10 @@ VALUES(1, 1),
       (21, 21),
       (22, 22),
       (23, 23),
-      (24, 24);
+      (24, 24),
+      (25, 25),
+      (26, 26),
+      (27, 27);
 
 
 
@@ -411,7 +427,10 @@ VALUES('1', 'Maskin', 'Maskin ødelagt', 'Elion brukte den feil', 'Fikse maskine
       ('21', 'Taket', 'Forhøye taket', 'For lite truck høyde, trangt i høyden', 'Snakke med et firma om det er mulig.', 'Tømme lager nr. 1 hvis forhøying er mulig.', '2022-11-08', '2023-04-08', '', '21', '21', '21', 'Safi', '21', '21', '21'),
       ('21', 'Parkeringsplass', 'Tydeligere merking', 'Usynlig merking på p-plasser', 'Remerke p-plassene på hele området', 'Snakke med samme firma som utvider p-plassene om de kan remerke alle plassene.', '2022-09-12', '2023-01-12', '', '22', '22', '21', 'Elion', '22', '22', '22'),
       ('1', 'Kopimaskin', 'Flytte kopimaskin ut fra kontoret', 'Andre må gå langt for å kopiere.', 'Gi alle lettere tilgang på kopimaskinen.', 'Enten flytte kopimaskinen ut fra kontoret slik at den er lett tilgjengelig for alle eller kjøpe en til for resten av bygget som kan plasseres i kantina.', '2022-10-06', '2023-01-01', '', '23', '23', '1', '', '23', '23', '23'),
-      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '9', 'Safi', '24', '24', '24');
+      ('9', 'Jente toalett', 'Gjøre om 1 av 2 toalettene i bygg A til jente toalett.', 'Jentene mangler toalett, men gutter har 2 stk i bygg A.', 'Fikse toalett for damene.', 'Bestille og endre skilt på døren til Jenter.', '2022-11-02', '2022-11-15', '', '24', '24', '9', 'Safi', '24', '24', '24'),
+      ('21', 'Kaffemaskin', 'Flytting av kaffemaskin.', 'Mindre effektivitet da alle må gå helt opp til andre for kontinuerlig henting av kaffe.', 'Bedre effektivitet, mindre sløsing av tid. Bedre å flytte maskinen en etasje ned.', 'Sette opp et bord ved trappa og flytte kaffemaskinen ned til gangen.', '2022-11-15', '2022-11-30', '', '25', '25', '21', 'Safi', '7', '25', '25'),
+      ('1', 'Oppvask', 'Daglig rutine for å sette på oppvaskmaskinen på kjøkkenet.', 'Lage en bedre rutine for å starte oppvaskmaskin før man reiser hjem.', 'Ha nyvasket bestikk/tallerken klar for dagen etter.', 'Peke ut en i hver senskift som setter på oppvaskmaskinen før personen drar hjem for dagen.', '2022-11-18', '2022-11-30', '', '26', '26', '1', 'Shlirim', '4', '26', '26'),
+      ('21', 'Kjøleskap', 'Rydde kjøleskap for gammel mat.', 'Gammel mat blir gjenværende for lenge i kjøleskapet.', 'Ikke la gammel mat ligge for lenge i kjøleskapet.', 'Bedre rutine. Utpeke en hver uke som renser kjøleskapet for gammel mat hver fredag før endt dag.', '2022-11-17', '2022-11-30', '', '27', '27', '21', 'Christoffer', '7', '27', '27');
 
 
 
